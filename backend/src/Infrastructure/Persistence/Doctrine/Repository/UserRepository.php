@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Infrastructure\Persistence\Doctrine\Repository;
 
@@ -8,7 +9,7 @@ use Doctrine\ORM\EntityManagerInterface;
 
 class UserRepository implements UserRepositoryInterface
 {
-    private $entityManager;
+    private EntityManagerInterface $entityManager;
 
     public function __construct(EntityManagerInterface $entityManager)
     {
@@ -33,12 +34,15 @@ class UserRepository implements UserRepositoryInterface
     public function add(User $user): void
     {
         $this->entityManager->persist($user);
-        $this->entityManager->flush();
     }
 
     public function remove(User $user): void
     {
         $this->entityManager->remove($user);
+    }
+
+    public function save(): void
+    {
         $this->entityManager->flush();
     }
 }

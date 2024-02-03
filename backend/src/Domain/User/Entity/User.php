@@ -18,6 +18,13 @@ class User
     #[ORM\Column(type: "string", length: 255)]
     private string $password;
 
+    public function __construct(int $id, string $username, string $password)
+    {
+        $this->id = $id;
+        $this->username = $username;
+        $this->password = $password;
+    }
+
     public function getId(): ?int
     {
         return $this->id;

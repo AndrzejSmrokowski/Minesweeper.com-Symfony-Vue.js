@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Domain\User\Repository;
 
@@ -15,4 +16,7 @@ interface UserRepositoryInterface
     public function add(User $user): void;
 
     public function remove(User $user): void;
+
+    public function save(): void;
+
 }

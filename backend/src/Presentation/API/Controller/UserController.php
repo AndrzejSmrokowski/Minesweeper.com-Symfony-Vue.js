@@ -1,35 +1,47 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Presentation\API\Controller;
 
+use App\Application\User\Command\CreateUserCommand;
+use App\Application\User\Query\GetUserQuery;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Attribute\Route;
 
-class UserController extends AbstractController
+class UserController
 {
+    private MessageBusInterface $commandBus;
+    private MessageBusInterface $queryBus;
 
-    private $userService;
-
-    public function __construct(UserService $userService)
+    public function __construct(MessageBusInterface $commandBus, MessageBusInterface $queryBus)
     {
-        $this->userService = $userService;
+        $this->commandBus = $commandBus;
+        $this->queryBus = $queryBus;
     }
 
     #[Route('/api/user', name: 'create_user', methods: ['POST'])]
     public function createUser(Request $request): Response
     {
         $data = json_decode($request->getContent(), true);
+        $command = new CreateUserCommand($data['username'], $data['password']);
+        $this->commandBus->dispatch($command);
 
-        if (empty($data['username']) || empty($data['password'])) {
-            return new Response('Invalid data', Response::HTTP_BAD_REQUEST);
-        }
-
-        $user = $this->userService->createUser($data['username'], $data['password']);
-
-        return new Response('User created with id: ' . $user->getId());
+        return new Response('', Response::HTTP_CREATED);
     }
 
+    #[Route('/api/user/{id}', name: 'get_user', methods: ['GET'])]
+    public function getUser(Request $request): Response
+    {
+        $data = json_decode($request->getContent(), true);
+        $id = $data['id'];
+
+        $user = $this->queryBus->dispatch(new GetUserQuery($id));
+
+        return new Response(json_encode($user), Response::HTTP_OK);
+    }
 
 }
