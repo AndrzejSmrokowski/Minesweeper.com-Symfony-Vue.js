@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Application\User\Query\Handler;
+namespace App\Shared\Application\Query\Handler;
 
 use App\Domain\User\Entity\User;
 use App\Infrastructure\Persistence\Doctrine\Repository\UserRepository;

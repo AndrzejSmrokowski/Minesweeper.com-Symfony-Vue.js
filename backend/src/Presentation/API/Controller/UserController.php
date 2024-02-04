@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace App\Presentation\API\Controller;
 
-use App\Application\User\Command\CreateUserCommand;
-use App\Application\User\Query\GetUserQuery;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use App\Shared\Application\Command\CreateUserCommand;
+use App\Shared\Application\Query\GetUserQuery;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Messenger\MessageBusInterface;

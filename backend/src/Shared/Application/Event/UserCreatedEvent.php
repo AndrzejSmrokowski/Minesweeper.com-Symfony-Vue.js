@@ -1,10 +1,9 @@
 <?php
-
 declare(strict_types=1);
 
-namespace App\Application\User\Query;
+namespace App\Shared\Application\Event;
 
-class GetUserQuery
+class UserCreatedEvent
 {
     private int $userId;
 

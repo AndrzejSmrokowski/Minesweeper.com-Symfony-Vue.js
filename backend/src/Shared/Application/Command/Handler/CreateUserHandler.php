@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Application\User\Command\Handler;
+namespace App\Shared\Application\Command\Handler;
 
 use App\Domain\User\Entity\User;
 use App\Domain\User\Repository\UserRepositoryInterface;
