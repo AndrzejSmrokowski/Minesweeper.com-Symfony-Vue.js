@@ -1,5 +1,5 @@
 # Base image
-FROM php:8.2-fpm
+FROM php:8.3-fpm
 
 # Install dependencies and PHP extensions
 RUN apt-get update && \

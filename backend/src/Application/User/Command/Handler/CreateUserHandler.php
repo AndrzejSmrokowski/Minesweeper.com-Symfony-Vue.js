@@ -1,15 +1,17 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Application\User\Command\Handler;
 
+use App\Application\Shared\Command\CommandHandlerInterface;
+use App\Application\User\Command\CreateUserCommand;
+use App\Application\User\Event\UserCreatedEvent;
 use App\Domain\User\Entity\User;
 use App\Domain\User\Repository\UserRepositoryInterface;
-use App\Shared\Application\Command\CreateUserCommand;
-use App\Shared\Application\Event\UserCreatedEvent;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
-class CreateUserHandler
+class CreateUserHandler implements CommandHandlerInterface
 {
     private UserRepositoryInterface $userRepository;
     private EventDispatcherInterface $eventDispatcher;

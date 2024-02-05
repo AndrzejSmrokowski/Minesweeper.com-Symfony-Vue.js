@@ -4,24 +4,19 @@ declare(strict_types=1);
 
 namespace App\Application\User\Command;
 
+use App\Application\User\DTO\UserDTO;
+
 class CreateUserCommand
 {
-    private string $username;
-    private string $password;
+    private UserDTO $userDTO;
 
-    public function __construct(string $username, string $password)
+    public function __construct(UserDTO $userDTO)
     {
-        $this->username = $username;
-        $this->password = $password;
+        $this->userDTO = $userDTO;
     }
 
-    public function getUsername(): string
+    public function getUserDTO(): UserDTO
     {
-        return $this->username;
-    }
-
-    public function getPassword(): string
-    {
-        return $this->password;
+        return $this->userDTO;
     }
 }
