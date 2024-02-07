@@ -1,5 +1,13 @@
 framework:
     messenger:
+        default_bus: command.bus
+
+        buses:
+            command.bus:
+                middleware:
+                    - doctrine_transaction
+            query.bus: ~
+
         failure_transport: failed
 
         transports:
@@ -13,12 +21,11 @@ framework:
                     max_retries: 3
                     multiplier: 2
             failed: 'doctrine://default?queue_name=failed'
-            # sync: 'sync://'
+            sync: 'sync://'
 
         routing:
             Symfony\Component\Mailer\Messenger\SendEmailMessage: async
             Symfony\Component\Notifier\Message\ChatMessage: async
             Symfony\Component\Notifier\Message\SmsMessage: async
-
-            # Route your messages to the transports
-            # 'App\Message\YourMessage': async
+            'App\Application\User\Query': sync
+            'App\Application\User\Command': async

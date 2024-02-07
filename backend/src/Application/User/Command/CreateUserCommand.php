@@ -4,19 +4,20 @@ declare(strict_types=1);
 
 namespace App\Application\User\Command;
 
-use App\Application\User\DTO\UserDTO;
+use App\Application\Shared\Command\CommandInterface;
+use App\Application\User\DTO\CreateUserDTO;
 
-class CreateUserCommand
+final class CreateUserCommand implements CommandInterface
 {
-    private UserDTO $userDTO;
+    private CreateUserDTO $createUserDTO;
 
-    public function __construct(UserDTO $userDTO)
+    public function __construct(CreateUserDTO $userDTO)
     {
-        $this->userDTO = $userDTO;
+        $this->createUserDTO = $userDTO;
     }
 
-    public function getUserDTO(): UserDTO
+    public function getUserDTO(): CreateUserDTO
     {
-        return $this->userDTO;
+        return $this->createUserDTO;
     }
 }

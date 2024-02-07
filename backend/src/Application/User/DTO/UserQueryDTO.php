@@ -4,20 +4,20 @@ declare(strict_types=1);
 
 namespace App\Application\User\DTO;
 
+use App\Application\Shared\Query\QueryResponseInterface;
 use App\Domain\User\Entity\User;
+use App\Domain\User\ValueObject\UserId;
 
-class UserDTO
+final readonly class UserQueryDTO implements QueryResponseInterface
 {
-    private ?string $id;
+    private UserId $id;
     private string $username;
-    private string $password;
     private string $email;
 
-    public function __construct(?string $id, string $username, string $password, string $email)
+    public function __construct(UserId $id, string $username, string $email)
     {
         $this->id = $id;
         $this->username = $username;
-        $this->password = $password;
         $this->email = $email;
     }
 
@@ -26,7 +26,7 @@ class UserDTO
         return new self($user->getId(), $user->getUsername(), $user->getEmail());
     }
 
-    public function getId(): ?string
+    public function getId(): UserId
     {
         return $this->id;
     }
@@ -34,11 +34,6 @@ class UserDTO
     public function getUsername(): string
     {
         return $this->username;
-    }
-
-    public function getPassword(): string
-    {
-        return $this->password;
     }
 
     public function getEmail(): string

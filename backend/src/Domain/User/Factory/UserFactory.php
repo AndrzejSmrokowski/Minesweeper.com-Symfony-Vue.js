@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\User\Factory;
 
-use App\Application\User\DTO\UserDTO;
+use App\Application\User\DTO\CreateUserDTO;
 use App\Domain\User\Entity\User;
 use App\Domain\User\Enum\UserRole;
 use App\Domain\User\ValueObject\UserId;
@@ -20,7 +20,7 @@ class UserFactory
         $this->passwordHasher = $passwordHasher;
     }
 
-    public function createFromDTO(UserDTO $dto): User
+    public function createFromDTO(CreateUserDTO $dto): User
     {
         $id = UserId::generate();
 

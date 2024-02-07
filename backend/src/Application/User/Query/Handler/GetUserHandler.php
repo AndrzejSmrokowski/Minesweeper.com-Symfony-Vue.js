@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace App\Application\User\Query\Handler;
 
-use App\Domain\User\Entity\User;
+use App\Application\Shared\Query\QueryHandlerInterface;
+use App\Application\Shared\Query\QueryInterface;
+use App\Application\User\DTO\UserQueryDTO;
+use App\Application\User\Query\GetUserQuery;
 use App\Infrastructure\Persistence\Doctrine\Repository\UserRepository;
-use App\Shared\Application\Query\GetUserQuery;
 
-class GetUserHandler
+class GetUserHandler implements QueryHandlerInterface
 {
     private UserRepository $userRepository;
 
@@ -17,8 +19,14 @@ class GetUserHandler
         $this->userRepository = $userRepository;
     }
 
-    public function handle(GetUserQuery $query): User
+    public function handle(QueryInterface $query): UserQueryDTO
     {
-        return $this->userRepository->find($query->getUserId());
+        $user = $this->userRepository->find($query->getUserId());
+
+        return new UserQueryDTO(
+            $user->getId(),
+            $user->getUsername(),
+            $user->getEmail()
+        );
     }
 }

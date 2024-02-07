@@ -7,29 +7,27 @@ namespace App\Application\User\Command\Handler;
 use App\Application\Shared\Command\CommandHandlerInterface;
 use App\Application\User\Command\CreateUserCommand;
 use App\Application\User\Event\UserCreatedEvent;
-use App\Domain\User\Entity\User;
-use App\Domain\User\Repository\UserRepositoryInterface;
+use App\Domain\User\Service\UserService;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class CreateUserHandler implements CommandHandlerInterface
 {
-    private UserRepositoryInterface $userRepository;
     private EventDispatcherInterface $eventDispatcher;
+    private UserService $userService;
 
-    public function __construct(UserRepositoryInterface $userRepository, EventDispatcherInterface $eventDispatcher)
+    public function __construct(EventDispatcherInterface $eventDispatcher, UserService $userService)
     {
-        $this->userRepository = $userRepository;
         $this->eventDispatcher = $eventDispatcher;
+        $this->userService = $userService;
     }
+
 
     public function handle(CreateUserCommand $command): void
     {
-        $user = new User($command->getUsername(), $command->getPassword());
-        $this->userRepository->add($user);
+        $createUserDTO = $command->getUserDTO();
+        $userRegistrationResult = $this->userService->createUser($createUserDTO);
 
-        $this->userRepository->save($user);
-
-        $event = new UserCreatedEvent($user->getId());
+        $event = new UserCreatedEvent($userRegistrationResult->getUserId());
         $this->eventDispatcher->dispatch($event, UserCreatedEvent::NAME);
     }
 }

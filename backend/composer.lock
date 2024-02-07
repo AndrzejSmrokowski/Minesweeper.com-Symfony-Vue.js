@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a4ad61b7341fbaea5a1e18c21d5f5ebb",
+    "content-hash": "fa693044ad5bd11da90de66e7661b22b",
     "packages": [
         {
             "name": "brick/math",
@@ -2334,6 +2334,138 @@
                 }
             ],
             "time": "2023-11-08T05:53:05+00:00"
+        },
+        {
+            "name": "simple-bus/doctrine-orm-bridge",
+            "version": "v6.3.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/SimpleBus/doctrine-orm-bridge.git",
+                "reference": "7d7bf7fd0c2cdc6512a0bd1978663fb15eda45a6"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/SimpleBus/doctrine-orm-bridge/zipball/7d7bf7fd0c2cdc6512a0bd1978663fb15eda45a6",
+                "reference": "7d7bf7fd0c2cdc6512a0bd1978663fb15eda45a6",
+                "shasum": ""
+            },
+            "require": {
+                "doctrine/dbal": "^2.12 || ^3.0",
+                "doctrine/orm": "^2.8.5",
+                "php": "^8.0",
+                "simple-bus/message-bus": "^6.0"
+            },
+            "conflict": {
+                "doctrine/dbal": "<2.13.3",
+                "doctrine/persistence": "<2.2.2"
+            },
+            "require-dev": {
+                "ergebnis/composer-normalize": "^2.11",
+                "phpunit/phpunit": "^9.5.5",
+                "pimple/pimple": "^3.5",
+                "symfony/cache": "^5.4 || ^6.0",
+                "symfony/phpunit-bridge": "^6.0"
+            },
+            "suggest": {
+                "simple-bus/symfony-bridge": "Bridge for using command buses and event buses with Symfony"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "SimpleBus\\DoctrineORMBridge\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Cliff Odijk",
+                    "email": "cliff@jcid.nl"
+                },
+                {
+                    "name": "Ruud Kamphuis",
+                    "homepage": "https://github.com/ruudk"
+                },
+                {
+                    "name": "Matthias Noback",
+                    "email": "matthiasnoback@gmail.com",
+                    "homepage": "http://php-and-symfony.matthiasnoback.nl"
+                }
+            ],
+            "description": "Doctrine ORM bridge for using command and event buses",
+            "homepage": "http://github.com/SimpleBus/DoctrineORMBridge",
+            "keywords": [
+                "command bus",
+                "doctrine",
+                "event bus"
+            ],
+            "support": {
+                "source": "https://github.com/SimpleBus/doctrine-orm-bridge/tree/v6.3.1"
+            },
+            "time": "2022-01-04T14:37:26+00:00"
+        },
+        {
+            "name": "simple-bus/message-bus",
+            "version": "v6.3.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/SimpleBus/message-bus.git",
+                "reference": "d3b6f4d70a2c35d9df93803c7cebefc17ef9e023"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/SimpleBus/message-bus/zipball/d3b6f4d70a2c35d9df93803c7cebefc17ef9e023",
+                "reference": "d3b6f4d70a2c35d9df93803c7cebefc17ef9e023",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^8.0",
+                "psr/log": "^1.1.4 || ^2.0 || ^3.0"
+            },
+            "require-dev": {
+                "ergebnis/composer-normalize": "^2.11",
+                "phpunit/phpunit": "^9.5.5",
+                "symfony/phpunit-bridge": "^6.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "SimpleBus\\Message\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Cliff Odijk",
+                    "email": "cliff@jcid.nl"
+                },
+                {
+                    "name": "Ruud Kamphuis",
+                    "homepage": "https://github.com/ruudk"
+                },
+                {
+                    "name": "Matthias Noback",
+                    "email": "matthiasnoback@gmail.com",
+                    "homepage": "http://php-and-symfony.matthiasnoback.nl"
+                }
+            ],
+            "description": "Generic classes and interfaces for messages and message buses",
+            "homepage": "http://github.com/SimpleBus/MessageBus",
+            "keywords": [
+                "command bus",
+                "event bus",
+                "message",
+                "message bus"
+            ],
+            "support": {
+                "source": "https://github.com/SimpleBus/message-bus/tree/v6.3.1"
+            },
+            "time": "2021-11-30T15:29:30+00:00"
         },
         {
             "name": "symfony/asset",

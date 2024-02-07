@@ -10,16 +10,17 @@ use Doctrine\ORM\Mapping as ORM;
 use InvalidArgumentException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: "App\Infrastructure\Persistence\Doctrine\Repository\UserRepository")]
 #[ORM\Table(name: "users")]
-class User implements PasswordAuthenticatedUserInterface
+class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
-    #[ORM\Id, ORM\Column(type: "string", length: 36)]
+    #[ORM\Id, ORM\Column(type: "string", length: 36, unique: true)]
     private UserId $id;
 
-    #[ORM\Column(type: "string", length: 255)]
+    #[ORM\Column(type: "string", length: 255, unique: true)]
     #[Assert\Length(min: 6)]
     #[Assert\Regex(pattern: '/^[a-zA-Z0-9_]+$/', message: 'Username can only contain letters, numbers and underscores')]
 
@@ -32,7 +33,7 @@ class User implements PasswordAuthenticatedUserInterface
     #[Assert\Regex(pattern: '/\d/', message: 'Password must contain at least one number')]
     private string $password;
 
-    #[ORM\Column(type: "string", length: 255)]
+    #[ORM\Column(type: "string", length: 255, unique: true)]
     #[Assert\Email]
     private string $email;
 
@@ -78,7 +79,7 @@ class User implements PasswordAuthenticatedUserInterface
     public function changePassword(string $currentPassword, string $newPassword, UserPasswordHasherInterface $passwordHasher): void
     {
         if (!$passwordHasher->isPasswordValid($this, $currentPassword)) {
-            throw new \InvalidArgumentException('Current password is incorrect');
+            throw new InvalidArgumentException('Current password is incorrect');
         }
 
         $this->password = $passwordHasher->hashPassword($this, $newPassword);
@@ -96,12 +97,12 @@ class User implements PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getRole(): string
+    public function getRole(): UserRole
     {
         return $this->role;
     }
 
-    public function setRole(string $role): self
+    public function setRole(UserRole $role): self
     {
         $this->role = $role;
 
@@ -111,5 +112,19 @@ class User implements PasswordAuthenticatedUserInterface
     public function getCreatedAt(): DateTimeImmutable
     {
         return $this->createdAt;
+    }
+
+    public function getRoles(): array
+    {
+        return [$this->role];
+    }
+
+    public function eraseCredentials(): void
+    {
+    }
+
+    public function getUserIdentifier(): string
+    {
+        return $this->id->toString();
     }
 }
