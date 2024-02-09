@@ -2,7 +2,11 @@
 framework:
     secret: '%env(APP_SECRET)%'
     #csrf_protection: true
-
+    messenger:
+        default_bus: command.bus
+        buses:
+            query.bus: ~
+            command.bus: ~
     # Note that the session will be started ONLY if you read or write from it.
     session: true
     test: true

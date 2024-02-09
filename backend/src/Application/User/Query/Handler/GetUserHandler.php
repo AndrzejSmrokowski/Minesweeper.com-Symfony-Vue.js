@@ -19,7 +19,7 @@ class GetUserHandler implements QueryHandlerInterface
         $this->userRepository = $userRepository;
     }
 
-    public function handle(QueryInterface $query): UserQueryDTO
+    public function __invoke(QueryInterface $query): UserQueryDTO
     {
         $user = $this->userRepository->find($query->getUserId());
 

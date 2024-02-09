@@ -4,58 +4,64 @@ declare(strict_types=1);
 
 namespace App\Presentation\API\Controller;
 
+use App\Application\Shared\Command\CommandBusInterface;
 use App\Application\Shared\Query\QueryBusInterface;
-use App\Application\Shared\Service\DTOValidator;
 use App\Application\User\Command\CreateUserCommand;
 use App\Application\User\DTO\CreateUserDTO;
 use App\Application\User\Query\GetUserQuery;
+use App\Domain\User\ValueObject\UserId;
+use Monolog\Logger;
+use Psr\Log\LoggerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Attribute\MapQueryParameter;
+use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Serializer\SerializerInterface;
-use Symfony\Component\Validator\Exception\ValidatorException;
 
-class UserController
+class UserController extends AbstractController
 {
-    private MessageBusInterface $commandBus;
+    private CommandBusInterface $commandBus;
     private QueryBusInterface $queryBus;
-    private DTOValidator $dtoValidator;
-    private SerializerInterface $serializer;
+    private LoggerInterface $logger;
 
-    public function __construct(MessageBusInterface $commandBus, QueryBusInterface $queryBus, DTOValidator $dtoValidator, SerializerInterface $serializer)
+    public function __construct(CommandBusInterface $commandBus, QueryBusInterface $queryBus, LoggerInterface $logger)
     {
         $this->commandBus = $commandBus;
         $this->queryBus = $queryBus;
-        $this->dtoValidator = $dtoValidator;
-        $this->serializer = $serializer;
+        $this->logger = $logger;
     }
 
-    #[Route('/api/user', name: 'create_user', methods: ['POST'])]
-    public function createUser(Request $request): Response
-    {
+    #[Route('/users', name: 'create_user', methods: ['POST'])]
+    public function createUser(
+        #[MapRequestPayload(
+            validationGroups: ['strict', 'edit'],
+            validationFailedStatusCode: Response::HTTP_UNPROCESSABLE_ENTITY
+        )]
+        CreateUserDTO $createUserDto
+    ): JsonResponse {
+        $command = new CreateUserCommand($createUserDto);
         try {
-            $createUserDTO = $this->serializer->deserialize($request->getContent(), CreateUserDTO::class, 'json');
-            $this->dtoValidator->validate($createUserDTO);
-
-            $command = new CreateUserCommand($createUserDTO);
             $this->commandBus->dispatch($command);
+        } catch (\Exception $exception) {
+            $this->logger->error('Error creating user: '.$exception->getMessage());
 
-            return new JsonResponse(['message' => 'User created successfully'], Response::HTTP_CREATED);
-        } catch (ValidatorException $exception) {
-            return new JsonResponse(['errors' => $exception->getMessage()], Response::HTTP_BAD_REQUEST);
+            return new JsonResponse(['error' => $exception->getMessage()], Response::HTTP_BAD_REQUEST);
         }
+
+        return new JsonResponse(['message' => 'User created successfully '], Response::HTTP_CREATED);
+
     }
 
-    #[Route('/api/user/{id}', name: 'get_user', methods: ['GET'])]
-    public function getUser(Request $request): Response
-    {
-        $id = $request->get('id');
-
-        $user = $this->queryBus->dispatch(new GetUserQuery($id));
-
-        return new Response(json_encode($user), Response::HTTP_OK);
-    }
+//    #[Route('/users/{id}', name: 'get_user', methods: ['GET'])]
+//    public function getUser(
+//        #[MapQueryParameter('id')] UserId $id
+//    ): JsonResponse
+//    {
+//        $queryResponse = $this->queryBus->handle(new GetUserQuery($id));
+//
+//        return new JsonResponse(json_encode($queryResponse), Response::HTTP_OK);
+//    }
 
 }

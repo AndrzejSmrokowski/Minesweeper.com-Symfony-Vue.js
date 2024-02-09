@@ -23,7 +23,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: "string", length: 255, unique: true)]
     #[Assert\Length(min: 6)]
     #[Assert\Regex(pattern: '/^[a-zA-Z0-9_]+$/', message: 'Username can only contain letters, numbers and underscores')]
-
     private string $username;
 
     #[ORM\Column(type: "string", length: 255)]

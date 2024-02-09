@@ -9,6 +9,7 @@ use App\Application\User\Command\CreateUserCommand;
 use App\Application\User\Event\UserCreatedEvent;
 use App\Domain\User\Service\UserService;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\Mailer\Messenger\MessageHandler;
 
 class CreateUserHandler implements CommandHandlerInterface
 {
@@ -22,7 +23,7 @@ class CreateUserHandler implements CommandHandlerInterface
     }
 
 
-    public function handle(CreateUserCommand $command): void
+    public function __invoke(CreateUserCommand $command): void
     {
         $createUserDTO = $command->getUserDTO();
         $userRegistrationResult = $this->userService->createUser($createUserDTO);

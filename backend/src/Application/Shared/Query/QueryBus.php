@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Application\Shared\Query;
 
 use Symfony\Component\Messenger\HandleTrait;
+use Symfony\Component\Messenger\MessageBus;
 use Symfony\Component\Messenger\MessageBusInterface;
 
 class QueryBus implements QueryBusInterface
@@ -20,7 +21,6 @@ class QueryBus implements QueryBusInterface
         $this->messageBus = $queryBus;
     }
 
-    /** @return mixed */
     public function handle(QueryInterface $query): QueryResponseInterface
     {
         return $this->handleQuery($query);

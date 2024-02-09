@@ -1,43 +1,90 @@
 <?php
-
 declare(strict_types=1);
 
 namespace App\Tests\Functional\Presentation\API\Controller;
 
-use App\Tests\Functional\FunctionalTestCase;
+use Doctrine\ORM\Tools\SchemaTool;
+use Doctrine\ORM\Tools\ToolsException;
+use Symfony\Bundle\FrameworkBundle\KernelBrowser;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\HttpFoundation\Response;
 
-class UserControllerTest extends FunctionalTestCase
+class UserControllerTest extends WebTestCase
 {
-    public function testCreateUser(): void
+    protected KernelBrowser $client;
+
+    /**
+     * @throws ToolsException
+     */
+    public function setUp(): void
+    {
+        parent::setUp();
+
+        $this->client = static::createClient();
+        $container = $this->client->getKernel()->getContainer();
+
+        $doctrine = $container->get('doctrine');
+        $entityManager = $doctrine->getManager();
+
+        $metadata = $doctrine->getManager()->getMetadataFactory()->getAllMetadata();
+
+        $schemaTool = new SchemaTool($entityManager);
+        $schemaTool->dropDatabase();
+        $schemaTool->createSchema($metadata);
+    }
+
+    public function testCreateUserSuccessfully(): void
     {
         // Given
-        $data = [
-            'username' => 'testuser',
-            'password' => 'testpassword',
+        $userData = [
+            'username' => 'testuser1234123',
+            'email' => 'testuser@example.com',
+            'password' => 'GurloxChuj12321!!@!@',
         ];
 
         // When
-        $this->client->request('POST', '/api/user', [], [], ['CONTENT_TYPE' => 'application/json'], json_encode($data));
+        $this->client->request('POST', '/users', [], [], ['CONTENT_TYPE' => 'application/json'], json_encode($userData));
 
         // Then
-        self::assertEquals(201, $this->client->getResponse()->getStatusCode());
+        if ($this->client->getResponse()->getStatusCode() !== Response::HTTP_CREATED) {
+            echo $this->client->getResponse()->getContent();
+        }
+        static::assertEquals(Response::HTTP_CREATED, $this->client->getResponse()->getStatusCode());
+        static::assertJson($this->client->getResponse()->getContent());
+        static::assertStringContainsString('User created successfully', $this->client->getResponse()->getContent());
     }
 
-    public function testGetUser(): void
+//    public function testCreateUserWithExistingEmail(): void
+//    {
+//        // Given
+//        $existingUserData = [
+//            'username' => 'existinguser',
+//            'email' => 'existinguser123@example.com',
+//            'password' => 'password',
+//        ];
+//        $this->client->request('POST', '/user', [], [], ['CONTENT_TYPE' => 'application/json'], json_encode($existingUserData));
+//
+//        // When
+//        $this->client->request('POST', '/user', [], [], ['CONTENT_TYPE' => 'application/json'], json_encode($existingUserData));
+//
+//        // Then
+//        static::assertEquals(Response::HTTP_BAD_REQUEST, $this->client->getResponse()->getStatusCode());
+//        static::assertJson($this->client->getResponse()->getContent());
+//        static::assertStringContainsString('User with email existinguser123@example.com already exists!', $this->client->getResponse()->getContent());
+//    }
+
+    public function testDatabaseHost(): void
     {
-        // Assuming a user with ID 1 exists
-        $userId = 1; // replace with a valid user ID that exists in your database during the test
+        // Given
+        $container = $this->client->getContainer();
 
         // When
-        $this->client->request('GET', '/api/user/' . $userId);
+        $doctrine = $container->get('doctrine');
+        $connection = $doctrine->getConnection();
+        $params = $connection->getParams();
 
         // Then
-        $response = $this->client->getResponse();
-        self::assertEquals(200, $response->getStatusCode());
-
-        $responseData = json_decode($response->getContent(), true);
-        self::assertIsArray($responseData);
-        self::assertArrayHasKey('id', $responseData);
-        self::assertEquals($userId, $responseData['id']);
+        static::assertArrayHasKey('host', $params);
+        echo 'Database host: ' . $params['host'];
     }
 }
