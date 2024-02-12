@@ -5,18 +5,17 @@ declare(strict_types=1);
 namespace App\Application\User\Query;
 
 use App\Application\Shared\Query\QueryInterface;
-use App\Domain\User\ValueObject\UserId;
 
 class GetUserQuery implements QueryInterface
 {
-    private UserId $userId;
+    private string $userId;
 
-    public function __construct(UserId $userId)
+    public function __construct(string $userId)
     {
         $this->userId = $userId;
     }
 
-    public function getUserId(): UserId
+    public function getUserId(): string
     {
         return $this->userId;
     }

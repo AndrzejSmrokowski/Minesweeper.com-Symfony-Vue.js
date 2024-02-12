@@ -5,8 +5,8 @@ namespace App\Infrastructure\Persistence\Doctrine\Repository;
 
 use App\Domain\User\Entity\User;
 use App\Domain\User\Repository\UserRepositoryInterface;
-use App\Domain\User\ValueObject\UserId;
 use Doctrine\ORM\EntityManagerInterface;
+use Ramsey\Uuid\UuidInterface;
 
 class UserRepository implements UserRepositoryInterface
 {
@@ -17,7 +17,7 @@ class UserRepository implements UserRepositoryInterface
         $this->entityManager = $entityManager;
     }
 
-    public function find(UserId $id): ?User
+    public function find(UuidInterface $id): ?User
     {
         return $this->entityManager->find(User::class, $id);
     }

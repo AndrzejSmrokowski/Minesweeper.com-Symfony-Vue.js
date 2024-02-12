@@ -7,8 +7,8 @@ namespace App\Application\User\Query\Handler;
 use App\Application\Shared\Query\QueryHandlerInterface;
 use App\Application\Shared\Query\QueryInterface;
 use App\Application\User\DTO\UserQueryDTO;
-use App\Application\User\Query\GetUserQuery;
 use App\Infrastructure\Persistence\Doctrine\Repository\UserRepository;
+use Ramsey\Uuid\Uuid;
 
 class GetUserHandler implements QueryHandlerInterface
 {
@@ -21,10 +21,11 @@ class GetUserHandler implements QueryHandlerInterface
 
     public function __invoke(QueryInterface $query): UserQueryDTO
     {
-        $user = $this->userRepository->find($query->getUserId());
+        $userId = $query->getUserId();
+        $user = $this->userRepository->find(Uuid::fromString($userId));
 
         return new UserQueryDTO(
-            $user->getId(),
+            $user->getId()->toString(),
             $user->getUsername(),
             $user->getEmail()
         );

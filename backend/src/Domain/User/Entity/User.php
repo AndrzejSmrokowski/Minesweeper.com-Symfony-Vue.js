@@ -4,10 +4,10 @@ declare(strict_types=1);
 namespace App\Domain\User\Entity;
 
 use App\Domain\User\Enum\UserRole;
-use App\Domain\User\ValueObject\UserId;
+use Ramsey\Uuid\Doctrine\UuidGenerator;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
-use InvalidArgumentException;
+use Ramsey\Uuid\UuidInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -17,8 +17,9 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Table(name: "users")]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
-    #[ORM\Id, ORM\Column(type: "string", length: 36, unique: true)]
-    private UserId $id;
+    #[ORM\Id, ORM\Column(type: "uuid", unique: true)]
+    #[ORM\GeneratedValue(strategy: "CUSTOM"), ORM\CustomIdGenerator(class: UuidGenerator::class)]
+    private UuidInterface $id;
 
     #[ORM\Column(type: "string", length: 255, unique: true)]
     #[Assert\Length(min: 6)]
@@ -36,16 +37,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Assert\Email]
     private string $email;
 
-    #[ORM\Column(type: "string", length: 255)]
+    #[ORM\Column(type: "string", enumType: UserRole::class)]
     private UserRole $role;
 
     #[ORM\Column(type: "datetime_immutable")]
     private DateTimeImmutable $createdAt;
 
-    public function __construct(UserId $id, string $username, string $password, string $email, UserRole $role)
+    public function __construct(string $username, string $password, string $email, UserRole $role)
     {
-
-        $this->id = $id;
         $this->username = $username;
         $this->password = $password;
         $this->email = $email;
@@ -53,7 +52,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->createdAt = new DateTimeImmutable();
     }
 
-    public function getId(): UserId
+    public function getId(): UuidInterface
     {
         return $this->id;
     }
@@ -75,12 +74,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->password;
     }
 
-    public function changePassword(string $currentPassword, string $newPassword, UserPasswordHasherInterface $passwordHasher): void
+    public function changePassword(string $newPassword, UserPasswordHasherInterface $passwordHasher): void
     {
-        if (!$passwordHasher->isPasswordValid($this, $currentPassword)) {
-            throw new InvalidArgumentException('Current password is incorrect');
-        }
-
         $this->password = $passwordHasher->hashPassword($this, $newPassword);
     }
 
@@ -124,6 +119,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getUserIdentifier(): string
     {
-        return $this->id->toString();
+        return $this->username;
     }
 }

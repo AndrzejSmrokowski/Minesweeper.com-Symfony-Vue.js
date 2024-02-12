@@ -8,9 +8,6 @@ use App\Application\Shared\Command\CommandBusInterface;
 use App\Application\Shared\Query\QueryBusInterface;
 use App\Application\User\Command\CreateUserCommand;
 use App\Application\User\DTO\CreateUserDTO;
-use App\Application\User\Query\GetUserQuery;
-use App\Domain\User\ValueObject\UserId;
-use Monolog\Logger;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -40,7 +37,7 @@ class UserController extends AbstractController
             validationFailedStatusCode: Response::HTTP_UNPROCESSABLE_ENTITY
         )]
         CreateUserDTO $createUserDto
-    ): JsonResponse {
+    ): JsonResponse{
         $command = new CreateUserCommand($createUserDto);
         try {
             $this->commandBus->dispatch($command);

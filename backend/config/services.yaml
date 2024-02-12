@@ -18,10 +18,12 @@ services:
                 - { name: 'messenger.message_handler', bus: 'query.bus' }
         App\Application\Shared\Command\CommandHandlerInterface:
             tags:
-                - { name: 'messenger.message_handler', bus: 'command.bus'}
-    app.command_bus:
-        class: App\Application\Shared\Command\CommandBus
-        public: false
-        arguments: [ [ ] ]
+                - { name: 'internal.command_handler', bus: 'command.bus'}
+  ### Buses
+    App\Application\Shared\Command\CommandBus:
+      class: App\Application\Shared\Command\CommandBus
+      arguments: [ !tagged internal.command_handler ]
+  ### Listeners
+    App\Application\User\Event\Listener\UserCreatedListener:
         tags:
-            - { name: command.bus, default: true }
+            - { name: 'kernel.event_listener', event: 'user.created' }

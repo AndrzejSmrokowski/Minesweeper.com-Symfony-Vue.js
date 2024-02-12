@@ -4,11 +4,11 @@ declare(strict_types=1);
 namespace App\Domain\User\Repository;
 
 use App\Domain\User\Entity\User;
-use App\Domain\User\ValueObject\UserId;
+use Ramsey\Uuid\UuidInterface;
 
 interface UserRepositoryInterface
 {
-    public function find(UserId $id): ?User;
+    public function find(UuidInterface $id): ?User;
 
     public function findOneBy(array $criteria): ?User;
 

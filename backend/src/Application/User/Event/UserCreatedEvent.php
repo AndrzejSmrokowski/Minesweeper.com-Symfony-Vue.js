@@ -3,20 +3,18 @@ declare(strict_types=1);
 
 namespace App\Application\User\Event;
 
-use App\Domain\User\ValueObject\UserId;
-
 class UserCreatedEvent
 {
     public const string NAME = 'user.created';
 
-    private UserId $userId;
+    private string $userId;
 
-    public function __construct(UserId $userId)
+    public function __construct(string $userId)
     {
         $this->userId = $userId;
     }
 
-    public function getUserId(): UserId
+    public function getUserId(): string
     {
         return $this->userId;
     }

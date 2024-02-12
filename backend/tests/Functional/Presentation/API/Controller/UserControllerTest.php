@@ -38,7 +38,7 @@ class UserControllerTest extends WebTestCase
         // Given
         $userData = [
             'username' => 'testuser1234123',
-            'email' => 'testuser@example.com',
+            'email' => '',
             'password' => 'GurloxChuj12321!!@!@',
         ];
 
