@@ -8,7 +8,7 @@ use App\Application\Shared\Query\QueryHandlerInterface;
 use App\Application\Shared\Query\QueryInterface;
 use App\Application\User\DTO\UserQueryDTO;
 use App\Infrastructure\Persistence\Doctrine\Repository\UserRepository;
-use Ramsey\Uuid\Uuid;
+use App\Domain\User\ValueObject\Uuid;
 
 class GetUserHandler implements QueryHandlerInterface
 {
@@ -22,12 +22,12 @@ class GetUserHandler implements QueryHandlerInterface
     public function __invoke(QueryInterface $query): UserQueryDTO
     {
         $userId = $query->getUserId();
-        $user = $this->userRepository->find(Uuid::fromString($userId));
+        $user = $this->userRepository->find(new Uuid($userId));
 
         return new UserQueryDTO(
-            $user->getId()->toString(),
-            $user->getUsername(),
-            $user->getEmail()
+            (string) $user->getId(),
+            (string) $user->getUsername(),
+            (string) $user->getEmail()
         );
     }
 }

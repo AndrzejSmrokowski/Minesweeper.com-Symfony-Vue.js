@@ -6,14 +6,13 @@ namespace App\Application\User\Command;
 
 use App\Application\Shared\Command\CommandInterface;
 
-final readonly class CreateUserCommand implements CommandInterface
+final readonly class UpdateUserCommand implements CommandInterface
 {
     public function __construct(
         private string $userId,
         private string $username,
-        private string $email,
-        private string $password
-    ) {}
+        private string $email
+    ){}
 
     public function getUserId(): string
     {
@@ -28,10 +27,5 @@ final readonly class CreateUserCommand implements CommandInterface
     public function getEmail(): string
     {
         return $this->email;
-    }
-
-    public function getPassword(): string
-    {
-        return $this->password;
     }
 }

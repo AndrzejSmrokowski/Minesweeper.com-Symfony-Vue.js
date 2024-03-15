@@ -4,65 +4,57 @@ declare(strict_types=1);
 namespace App\Domain\User\Entity;
 
 use App\Domain\User\Enum\UserRole;
-use Ramsey\Uuid\Doctrine\UuidGenerator;
+use App\Domain\User\Enum\UserRoleCollection;
+use App\Domain\User\ValueObject\Email;
+use App\Domain\User\ValueObject\Username;
+use App\Domain\User\ValueObject\Uuid;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
-use Ramsey\Uuid\UuidInterface;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
-use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: "App\Infrastructure\Persistence\Doctrine\Repository\UserRepository")]
 #[ORM\Table(name: "users")]
-class User implements UserInterface, PasswordAuthenticatedUserInterface
+class User implements PasswordAuthenticatedUserInterface
 {
     #[ORM\Id, ORM\Column(type: "uuid", unique: true)]
-    #[ORM\GeneratedValue(strategy: "CUSTOM"), ORM\CustomIdGenerator(class: UuidGenerator::class)]
-    private UuidInterface $id;
+    private Uuid $id;
 
-    #[ORM\Column(type: "string", length: 255, unique: true)]
-    #[Assert\Length(min: 6)]
-    #[Assert\Regex(pattern: '/^[a-zA-Z0-9_]+$/', message: 'Username can only contain letters, numbers and underscores')]
-    private string $username;
+    #[ORM\Column(type: "username", length: 255, unique: true)]
+    private Username $username;
 
     #[ORM\Column(type: "string", length: 255)]
-    #[Assert\Length(min: 6)]
-    #[Assert\Regex(pattern: '/[A-Z]/', message: 'Password must contain at least one uppercase letter')]
-    #[Assert\Regex(pattern: '/[a-z]/', message: 'Password must contain at least one lowercase letter')]
-    #[Assert\Regex(pattern: '/\d/', message: 'Password must contain at least one number')]
     private string $password;
 
-    #[ORM\Column(type: "string", length: 255, unique: true)]
-    #[Assert\Email]
-    private string $email;
+    #[ORM\Column(type: "email", length: 255, unique: true)]
+    private Email $email;
 
-    #[ORM\Column(type: "string", enumType: UserRole::class)]
-    private UserRole $role;
+    #[ORM\Column(type: "user_role_collection")]
+    private UserRoleCollection $roles;
 
     #[ORM\Column(type: "datetime_immutable")]
     private DateTimeImmutable $createdAt;
 
-    public function __construct(string $username, string $password, string $email, UserRole $role)
+    public function __construct(Uuid $userId, Username $username, string $password, Email $email, UserRoleCollection $roles)
     {
+        $this->id = $userId;
         $this->username = $username;
         $this->password = $password;
         $this->email = $email;
-        $this->role = $role;
+        $this->roles = $roles;
         $this->createdAt = new DateTimeImmutable();
     }
 
-    public function getId(): UuidInterface
+    public function getId(): Uuid
     {
         return $this->id;
     }
 
-    public function getUsername(): string
+    public function getUsername(): Username
     {
         return $this->username;
     }
 
-    public function setUsername(string $username): self
+    public function setUsername(Username $username): self
     {
         $this->username = $username;
 
@@ -74,33 +66,33 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->password;
     }
 
-    public function changePassword(string $newPassword, UserPasswordHasherInterface $passwordHasher): void
+    public function changePassword(string $hashedPassword): void
     {
-        $this->password = $passwordHasher->hashPassword($this, $newPassword);
+        $this->password = $hashedPassword;
     }
 
-    public function getEmail(): string
+    public function getEmail(): Email
     {
         return $this->email;
     }
 
-    public function setEmail(string $email): self
+    public function setEmail(Email $email): self
     {
         $this->email = $email;
 
         return $this;
     }
 
-    public function getRole(): UserRole
+    public function getRoles(): UserRoleCollection
     {
-        return $this->role;
+        return $this->roles;
     }
 
-    public function setRole(UserRole $role): self
+    public function addRole(UserRole $role): void
     {
-        $this->role = $role;
-
-        return $this;
+        if (!$this->roles->contains($role)) {
+            $this->roles->add($role);
+        }
     }
 
     public function getCreatedAt(): DateTimeImmutable
@@ -108,17 +100,4 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->createdAt;
     }
 
-    public function getRoles(): array
-    {
-        return [$this->role];
-    }
-
-    public function eraseCredentials(): void
-    {
-    }
-
-    public function getUserIdentifier(): string
-    {
-        return $this->username;
-    }
 }

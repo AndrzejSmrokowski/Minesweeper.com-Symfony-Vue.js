@@ -1,0 +1,15 @@
+default:
+  suites:
+    default:
+      contexts:
+        - App\Tests\Behat\User\UserCreationContext
+  extensions:
+    FriendsOfBehat\SymfonyExtension:
+      kernel:
+        class: 'App\Kernel'
+        environment: 'test'
+    Behat\MinkExtension:
+      base_url: 'http://localhost:8000'
+      sessions:
+        default:
+          symfony: ~

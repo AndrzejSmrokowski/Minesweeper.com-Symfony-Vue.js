@@ -4,12 +4,10 @@ declare(strict_types=1);
 
 namespace App\Application\Shared\Command;
 
-use App\Application\Shared\Command\HandlerBuilder;
 use InvalidArgumentException;
 use Symfony\Component\Messenger\Exception\HandlerFailedException;
 use Symfony\Component\Messenger\Exception\NoHandlerForMessageException;
 use Symfony\Component\Messenger\Handler\HandlersLocator;
-use Symfony\Component\Messenger\HandleTrait;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Messenger\Middleware\HandleMessageMiddleware;
 use Symfony\Component\Messenger\MessageBus;

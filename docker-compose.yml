@@ -27,7 +27,8 @@ services:
     container_name: database
 
   php:
-    build: ./docker/php
+    build:
+      context: ./docker/php
     env_file:
       - ./backend/.env
     volumes:

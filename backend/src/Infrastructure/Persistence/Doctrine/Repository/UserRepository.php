@@ -1,12 +1,14 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Infrastructure\Persistence\Doctrine\Repository;
 
 use App\Domain\User\Entity\User;
 use App\Domain\User\Repository\UserRepositoryInterface;
+use App\Domain\User\ValueObject\UuidInterface;
 use Doctrine\ORM\EntityManagerInterface;
-use Ramsey\Uuid\UuidInterface;
+use Doctrine\ORM\NonUniqueResultException;
 
 class UserRepository implements UserRepositoryInterface
 {
@@ -25,6 +27,32 @@ class UserRepository implements UserRepositoryInterface
     public function findOneBy(array $criteria): ?User
     {
         return $this->entityManager->getRepository(User::class)->findOneBy($criteria);
+    }
+
+    /**
+     * @throws NonUniqueResultException
+     */
+    public function findByUsername(string $username): ?User
+    {
+        return $this->entityManager->createQueryBuilder()
+            ->select('u')
+            ->from(User::class, 'u')
+            ->where('u.username = :username')
+            ->setParameters(['username' => $username])
+            ->getQuery()->getOneOrNullResult();
+    }
+
+    /**
+     * @throws NonUniqueResultException
+     */
+    public function findByEmail(string $email): ?User
+    {
+        return $this->entityManager->createQueryBuilder()
+            ->select('u')
+            ->from(User::class, 'u')
+            ->where('u.email = :email')
+            ->setParameter('email', $email)
+            ->getQuery()->getOneOrNullResult();
     }
 
     public function findAll(): array

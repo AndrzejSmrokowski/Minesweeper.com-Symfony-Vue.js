@@ -4,25 +4,21 @@ declare(strict_types=1);
 
 namespace App\Application\User\DTO;
 
-use Symfony\Component\Validator\Constraints as Assert;
+use SensitiveParameter;
 
 final readonly class CreateUserDTO
 {
-    #[Assert\NotBlank]
-    #[Assert\Length(min: 6, max: 50)]
-    private string $username;
-    #[Assert\NotBlank]
-    #[Assert\Length(min: 6, max: 50)]
-    private string $password;
-    #[Assert\NotBlank]
-    #[Assert\Email]
-    private string $email;
+    public function __construct(
+        private string $userId,
+        private string $username,
+        private string $email,
+        #[SensitiveParameter]
+        private string $password
+    ){}
 
-    public function __construct(string $username,#[\SensitiveParameter] string $password, string $email)
+    public function getUserId(): string
     {
-        $this->username = $username;
-        $this->password = $password;
-        $this->email = $email;
+        return $this->userId;
     }
 
     public function getUsername(): string
@@ -30,13 +26,13 @@ final readonly class CreateUserDTO
         return $this->username;
     }
 
-    public function getPassword(): string
-    {
-        return $this->password;
-    }
-
     public function getEmail(): string
     {
         return $this->email;
+    }
+
+    public function getPassword(): string
+    {
+        return $this->password;
     }
 }
