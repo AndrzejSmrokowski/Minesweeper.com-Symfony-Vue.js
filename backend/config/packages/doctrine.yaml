@@ -2,14 +2,12 @@ doctrine:
     dbal:
         url: '%env(resolve:DATABASE_URL)%'
 
-        # IMPORTANT: You MUST configure your server version,
-        # either here or in the DATABASE_URL env var (see .env file)
         #server_version: '16'
         types:
-            user_role_collection: App\Infrastructure\Persistence\Doctrine\Types\UserRoleCollectionType
-            email: App\Infrastructure\Persistence\Doctrine\Types\EmailType
-            uuid: App\Infrastructure\Persistence\Doctrine\Types\UuidType
-            username: App\Infrastructure\Persistence\Doctrine\Types\UsernameType
+            user_role_collection: App\User\Infrastructure\Persistence\Doctrine\Types\UserRoleCollectionType
+            email: App\User\Infrastructure\Persistence\Doctrine\Types\EmailType
+            uuid: App\User\Infrastructure\Persistence\Doctrine\Types\UuidType
+            username: App\User\Infrastructure\Persistence\Doctrine\Types\UsernameType
 
         profiling_collect_backtrace: '%kernel.debug%'
     orm:
@@ -23,8 +21,8 @@ doctrine:
             User:
                 type: attribute
                 is_bundle: false
-                dir: '%kernel.project_dir%/src/Domain/User'
-                prefix: 'App\Domain\User'
+                dir: '%kernel.project_dir%/src/User/Domain/Entity'
+                prefix: 'App\User\Domain\Entity'
                 alias: User
 
 when@test:

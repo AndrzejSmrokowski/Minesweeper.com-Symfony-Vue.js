@@ -34,6 +34,10 @@ class UserControllerTest extends WebTestCase
         $schemaTool->createSchema($metadata);
     }
 
+    // ============================
+    // CREATE USER TESTS
+    // ============================
+
     public function testCreateUserSuccessfully(): void
     {
         // Given
@@ -47,9 +51,6 @@ class UserControllerTest extends WebTestCase
         $this->client->request('POST', '/users', [], [], ['CONTENT_TYPE' => 'application/json'], json_encode($userData));
 
         // Then
-        if ($this->client->getResponse()->getStatusCode() !== Response::HTTP_CREATED) {
-            echo $this->client->getResponse()->getContent();
-        }
         static::assertStringContainsString('User created successfully', $this->client->getResponse()->getContent());
         static::assertEquals(Response::HTTP_CREATED, $this->client->getResponse()->getStatusCode());
         static::assertJson($this->client->getResponse()->getContent());
@@ -72,33 +73,6 @@ class UserControllerTest extends WebTestCase
          static::assertStringContainsString('User already exists with email: existinguser123@example.com and username: existinguser', $this->client->getResponse()->getContent());
         static::assertEquals(Response::HTTP_CONFLICT, $this->client->getResponse()->getStatusCode());
         static::assertJson($this->client->getResponse()->getContent());
-    }
-
-    public function testDeleteUser(): void
-    {
-        // Given
-        $userData = [
-            'username' => 'testuser123',
-            'email' => 'testemail@gmail.com',
-            'password' => 'Gurlox12321!!@!@',
-        ];
-
-        $this->client->request('POST', '/users', [], [], ['CONTENT_TYPE' => 'application/json'], json_encode($userData));
-        $response = json_decode($this->client->getResponse()->getContent(), true);
-        static::assertStringContainsString('User created successfully', $this->client->getResponse()->getContent());
-
-        $userId = $response['userId'];
-
-        // When
-        $this->client->request('DELETE', "/users/$userId");
-
-        // Then
-        static::assertStringContainsString('User deleted successfully', $this->client->getResponse()->getContent());
-        static::assertEquals(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
-
-        // Check if user is really deleted
-        $this->client->request('GET', "/users/$userId");
-        static::assertEquals(Response::HTTP_NOT_FOUND, $this->client->getResponse()->getStatusCode());
     }
 
     public function testCreateUserWithInvalidEmail(): void
@@ -217,6 +191,46 @@ class UserControllerTest extends WebTestCase
         static::assertEquals($userId, $userResponse['id']);
         static::assertEquals($userData['username'], $userResponse['username']);
         static::assertEquals($userData['email'], $userResponse['email']);
+    }
+
+    public function testGetNonExistentUserById(): void
+    {
+        // Given
+        $nonExistentUserId = Uuid::uuid4()->toString();
+
+        // When
+        $this->client->request('GET', "/users/$nonExistentUserId");
+
+        // Then
+        static::assertStringContainsString("User with id $nonExistentUserId not found", $this->client->getResponse()->getContent());
+        static::assertEquals(Response::HTTP_NOT_FOUND, $this->client->getResponse()->getStatusCode());
+    }
+
+    public function testDeleteUser(): void
+    {
+        // Given
+        $userData = [
+            'username' => 'testuser123',
+            'email' => 'testemail@gmail.com',
+            'password' => 'Gurlox12321!!@!@',
+        ];
+
+        $this->client->request('POST', '/users', [], [], ['CONTENT_TYPE' => 'application/json'], json_encode($userData));
+        $response = json_decode($this->client->getResponse()->getContent(), true);
+        static::assertStringContainsString('User created successfully', $this->client->getResponse()->getContent());
+
+        $userId = $response['userId'];
+
+        // When
+        $this->client->request('DELETE', "/users/$userId");
+
+        // Then
+        static::assertStringContainsString('User deleted successfully', $this->client->getResponse()->getContent());
+        static::assertEquals(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
+
+        // Check if user is really deleted
+        $this->client->request('GET', "/users/$userId");
+        static::assertEquals(Response::HTTP_NOT_FOUND, $this->client->getResponse()->getStatusCode());
     }
 
 }

@@ -13,17 +13,20 @@ services:
             - '../src/Kernel.php'
 
     _instanceof:
-        App\Application\Shared\Query\QueryHandlerInterface:
+        App\Shared\Application\Query\QueryHandlerInterface:
             tags:
                 - { name: 'messenger.message_handler', bus: 'query.bus' }
-        App\Application\Shared\Command\CommandHandlerInterface:
+        App\Shared\Application\Command\CommandHandlerInterface:
             tags:
                 - { name: 'internal.command_handler', bus: 'command.bus'}
   ### Buses
-    App\Application\Shared\Command\CommandBus:
-      class: App\Application\Shared\Command\CommandBus
+    App\Shared\Application\Command\CommandBus:
+      class: App\Shared\Application\Command\CommandBus
       arguments: [ !tagged internal.command_handler ]
   ### Listeners
-    App\Application\User\Event\Listener\UserCreatedListener:
+    App\User\Application\Event\Listener\UserCreatedListener:
         tags:
             - { name: 'kernel.event_listener', event: 'user.created' }
+    App\User\Application\Event\Listener\UserDeletedListener:
+        tags:
+            - { name: 'kernel.event_listener', event: 'user.deleted' }

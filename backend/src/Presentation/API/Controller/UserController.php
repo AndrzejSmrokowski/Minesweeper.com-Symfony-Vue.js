@@ -4,20 +4,20 @@ declare(strict_types=1);
 
 namespace App\Presentation\API\Controller;
 
-use App\Application\Shared\Command\CommandBusInterface;
-use App\Application\Shared\Query\QueryBusInterface;
-use App\Application\User\Command\CreateUserCommand;
-use App\Application\User\Command\DeleteUserCommand;
-use App\Application\User\Command\UpdateUserCommand;
-use App\Application\User\DTO\UserQueryDTO;
-use App\Application\User\Query\GetUserQuery;
+use App\Shared\Application\Command\CommandBusInterface;
+use App\Shared\Application\Query\QueryBusInterface;
+use App\User\Application\Command\CreateUserCommand;
+use App\User\Application\Command\DeleteUserCommand;
+use App\User\Application\Command\UpdateUserCommand;
+use App\User\Application\DTO\UserQueryDTO;
+use App\User\Application\Query\GetUserQuery;
+use Assert\Assert;
+use Ramsey\Uuid\Uuid;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use Assert\Assert;
-use Ramsey\Uuid\Uuid;
 
 class UserController extends AbstractController
 {
@@ -58,12 +58,16 @@ class UserController extends AbstractController
         /** @var UserQueryDTO $queryResponse */
         $queryResponse = $this->queryBus->handle(new GetUserQuery($id));
 
+
         $userData = [
             'id' => $queryResponse->getId(),
             'username' => $queryResponse->getUsername(),
             'email' => $queryResponse->getEmail(),
         ];
 
+        if ($userData['username'] === 'User not found'){
+            return new JsonResponse(['message' => "User with id $id not found"], Response::HTTP_NOT_FOUND);
+        }
         return new JsonResponse($userData, Response::HTTP_OK);
     }
 
